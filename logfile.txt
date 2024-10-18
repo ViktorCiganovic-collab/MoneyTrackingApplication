@@ -1,8 +1,8 @@
 Taxes,Expense,3000,December
 Rent,Expense,3000,December
-Grants,Income,6000,September
 Investments,Income,5000,June
 Vehicle maintenance,Expense,5000,July
+Grants,Income,6000,September
 Sale Revenue,Income,6000,May
 Donations,Income,7000,October
 Subscriptions,Expense,7000,November

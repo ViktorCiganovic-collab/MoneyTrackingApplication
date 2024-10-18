@@ -449,14 +449,40 @@ namespace MoneyTrackingApplication
                     Console.ResetColor();
                     removeEdit();
                     }
+                Console.WriteLine("Is this transaction an Income or Expense?");
+                string categoryOfDeletedEvent = Console.ReadLine();
+                if (categoryOfDeletedEvent == "")
+                {
+                    Console.ForegroundColor = ConsoleColor.Red;
+                    Console.WriteLine("The month you provided for this transaction is not correct");
+                    Console.ResetColor();
+                    removeEdit();
+                }
+                Console.WriteLine("Which is the amount of the transaction? - Write without \"-\" if it is an expense");
+                var amountOfDeletedEvent = Console.ReadLine();
+                int num;
+                if (!int.TryParse(amountOfDeletedEvent, out num))
+                {
+                    Console.ForegroundColor = ConsoleColor.Red;
+                    Console.WriteLine("The amount is not a number!");
+                    Console.ResetColor();
+                }
+                Console.WriteLine("In which month is this transaction?");
+                string monthOfDeletedEvent = Console.ReadLine();
+                if (monthOfDeletedEvent == "")
+                {
+                    Console.ForegroundColor = ConsoleColor.Red;
+                    Console.WriteLine("Our system could not find this transaction in the provided month - please try again");
+                    Console.ResetColor();
+                }
 
                 Console.WriteLine($"Are you sure you want to remove {deleteItem}? - answer with Yes/No");
-                    var firstEven = sortedList.FirstOrDefault(n => n.Name == deleteItem);
+                    var theItemToDelete = sortedList.FirstOrDefault(n => n.Name == deleteItem && n.Category == categoryOfDeletedEvent && n.Amount == Int32.Parse(amountOfDeletedEvent) && n.Month == monthOfDeletedEvent);
                     string answer = Console.ReadLine();
-                    if (answer == "Yes" && sortedList.Contains(firstEven))
+                    if (answer == "Yes" && sortedList.Contains(theItemToDelete))
                     {
 
-                        sortedList.RemoveAll(x => x.Name == deleteItem);
+                        sortedList.Remove(theItemToDelete);
 
                         Console.ForegroundColor = ConsoleColor.Green;
                         Console.WriteLine($"We have removed transaction event {deleteItem}");
@@ -494,7 +520,7 @@ namespace MoneyTrackingApplication
                     else
                     {
                         Console.ForegroundColor = ConsoleColor.Red;
-                        Console.WriteLine("It was for some reason not possible to process your request - Please check your spelling");
+                        Console.WriteLine("Our system could not find this transaction or you did not confirm the change - Please check your spelling and try again");
                         Console.ResetColor();
                         Console.WriteLine("Press Enter to try again");
                         Console.ReadLine();
@@ -514,10 +540,42 @@ namespace MoneyTrackingApplication
                     Console.ResetColor();
                     removeEdit();
                     }
-                    var index = sortedList.FindIndex(transactionEvent => transactionEvent.Name == theItemToEdit);
+                    Console.WriteLine("Is the transaction you want to edit an Income or an Expense - (Income/Expense)");
+                    string categoryOfEditItem = Console.ReadLine();
+                    if (categoryOfEditItem == "")
+                    {
+                    Console.ForegroundColor = ConsoleColor.Red;
+                    Console.WriteLine("You did not input a correct value");
+                    Console.ResetColor();
+                    removeEdit();
+                    }
+                    Console.WriteLine("Which is the amount of the transaction you want to edit?");
+                    var amountOfEditItem = Console.ReadLine();
+                    int num;
+                    if (!int.TryParse(amountOfEditItem, out num))
+                    {
+                    Console.ForegroundColor = ConsoleColor.Red;
+                    Console.WriteLine("You did not enter an amount");
+                    Console.ResetColor();
+                    removeEdit();
+                    }
+                    Console.WriteLine("Which month does the transaction belong to?");
+                    string monthOfEditItem = Console.ReadLine();
+                    if (monthOfEditItem == "")
+                    {
+                    Console.ForegroundColor = ConsoleColor.Red;
+                    Console.WriteLine("You did not enter a month!");
+                    Console.ResetColor();
+                    removeEdit();
+                    }
+                    var index = sortedList.FindIndex(transactionEvent => transactionEvent.Name == theItemToEdit && transactionEvent.Category == categoryOfEditItem && transactionEvent.Amount == Int32.Parse(amountOfEditItem) && transactionEvent.Month == monthOfEditItem);
                     Console.WriteLine($"Are you sure you want to edit {theItemToEdit}? - (Yes/No)");
                     string userChoose = Console.ReadLine();
-                    if (userChoose == "Yes")
+
+                try
+                {
+
+                    if (userChoose == "Yes" && sortedList.Contains(sortedList[index]))
                     {
 
                         Console.WriteLine("Would you like to change the name, category, amount or month of this transaction event?");
@@ -588,22 +646,35 @@ namespace MoneyTrackingApplication
                         }
                         if (decision != "name" && decision != "category" && decision != "amount" && decision != "month")
                         {
-                        Console.ForegroundColor = ConsoleColor.Red;
-                        Console.WriteLine("You didn't choose a valid parameter to edit!");
+                            Console.ForegroundColor = ConsoleColor.Red;
+                            Console.WriteLine("You didn't choose a valid parameter to edit!");
+                            Console.ResetColor();
+                        }
+
+
+
+                        Console.BackgroundColor = ConsoleColor.Magenta;
+                        Console.WriteLine("The edited balance is displayed below:");
                         Console.ResetColor();
+
+                        foreach (Transaction transaction in sortedList)
+                        {
+
+                            Console.WriteLine($"{Transaction.Truncate(transaction.Name, 15)} {Transaction.Truncate(transaction.Category, 15)} {Transaction.Truncate(transaction.Amount.ToString(), 15)} {Transaction.Truncate(transaction.Month, 15)}");
                         }
 
                     }
+                }
 
-                    Console.BackgroundColor = ConsoleColor.Magenta;
-                    Console.WriteLine("The edited balance is displayed below:");
-                    Console.ResetColor();
+                catch {
 
-                    foreach (Transaction transaction in sortedList)
-                    {
+                
+                        Console.ForegroundColor = ConsoleColor.Red;
+                        Console.WriteLine("Our system did not find the transaction you are looking for in our database or you choose not to confirm the edit - please check your spelling and try again");
+                        Console.ResetColor();
+                    
 
-                        Console.WriteLine($"{Transaction.Truncate(transaction.Name, 15)} {Transaction.Truncate(transaction.Category, 15)} {Transaction.Truncate(transaction.Amount.ToString(), 15)} {Transaction.Truncate(transaction.Month, 15)}");
-                    }
+                }
 
                     Console.WriteLine("Press Enter to go back to main menu");
                     Console.ReadLine();
